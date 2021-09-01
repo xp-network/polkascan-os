@@ -20,7 +20,10 @@ jobs:
                 key: ${{ secrets.KEY }}
                 envs: POLKASCAN_FOLDER,COMPOSE_PROJECT,COMPOSE_FILE
                 script: |
+                        cd $POLKASCAN_FOLDER && git pull
+                        git submodule update --recursive
                         cd $POLKASCAN_FOLDER/explorer-gui && git pull
                         cd $POLKASCAN_FOLDER/harvester && git pull
+                        git submodule update --recursive
                         cd $POLKASCAN_FOLDER
                         docker-compose -p $COMPOSE_PROJECT -f $COMPOSE_FILE up -d --build
