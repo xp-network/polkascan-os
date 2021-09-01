@@ -1,0 +1,26 @@
+name: update-prod
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: update explorer-gui
+        uses: appleboy/ssh-action@master
+        env:
+                POLKASCAN_FOLDER: ${{ secrets.POLKASCAN_FOLDER }}
+                COMPOSE_PROJECT: ${{ secrets.COMPOSE_PROJECT }}
+                COMPOSE_FILE: "docker-compose.substrate-node-template.yml"
+        with:
+                host: ${{ secrets.HOST }}
+                username: ${{ secrets.USERNAME }}
+                port: ${{ secrets.PORT }}
+                key: ${{ secrets.KEY }}
+                envs: POLKASCAN_FOLDER,COMPOSE_PROJECT,COMPOSE_FILE
+                script: |
+                        cd $POLKASCAN_FOLDER/explorer-gui && git pull
+                        cd $POLKASCAN_FOLDER/harvester && git pull
+                        cd $POLKASCAN_FOLDER
+                        docker-compose -p $COMPOSE_PROJECT -f $COMPOSE_FILE up -d --build
